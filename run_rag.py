@@ -65,7 +65,7 @@ def call_llm(
             chat_history += f"{human}\n"
             chat_history += f"{assistant}\n"
         chat_history += message
-        final_question = question_extention(message)
+        final_question = question_extention(chat_history)
 
     print(final_question)
 
