@@ -33,6 +33,7 @@ def question_extention(
         f"{chat_history}"
         "\n```"
     )
+    print(f"query: {query}")
     messages = [
     {"role": "system", "content": "あなたは親切なAIアシスタントです。"},
     {"role": "user", "content": query}
@@ -65,9 +66,11 @@ def call_llm(
             chat_history += f"{human}\n"
             chat_history += f"{assistant}\n"
         chat_history += message
+
+        print(f"chat history: {chat_history}")
         final_question = question_extention(chat_history)
 
-    print(final_question)
+    print(f"final question: {final_question}")
 
     history_openai_format = []
     docs = db.similarity_search(final_question, k=1)
@@ -79,7 +82,7 @@ def call_llm(
         "content": system_prompt
     }
     history_openai_format.append(init)
-    history_openai_format.append({"role": "user", "content": message})
+    history_openai_format.append({"role": "user", "content": final_question})
     
     input_ids = tokenizer.apply_chat_template(
         history_openai_format,
