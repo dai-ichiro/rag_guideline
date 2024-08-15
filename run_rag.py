@@ -26,8 +26,29 @@ db = FAISS.load_local(
 )
 def question_extention(
         chat_history: str
-):
-    return "todo"
+) -> str:
+    query = (
+        "以下にチャットの履歴があります。最後の行がユーザーの質問です。チャット履歴をもとにユーザーの質問をそれ自体で内容がわかるように簡単に書き換えて下さい。"
+        "\n```\n"
+        f"{chat_history}"
+        "\n```"
+    )
+    messages = [
+    {"role": "system", "content": "あなたは親切なAIアシスタントです。"},
+    {"role": "user", "content": chat_history}
+    ]
+    input_ids = tokenizer.apply_chat_template(
+        messages,
+        add_generation_prompt=True,
+        return_tensors="pt"
+    ).to(model.device)
+    tokens = model.generate(
+        input_ids,
+        max_new_tokens=256,
+        do_sample=True,
+    )
+    out = tokenizer.decode(tokens[0][len(input_ids[0]):], skip_special_tokens=True)
+    return out
 
 def call_llm(
     message: str,
@@ -36,16 +57,26 @@ def call_llm(
     temperature: float,
     top_p: float,
 ):
-    history_openai_format = []
+    if len(history) == 0:
+        final_question = message
+    else:
+        chat_history = ""
+        for human, assistant in history:
+            chat_history += f"{human}\n"
+            chat_history += f"{assistant}\n"
+        chat_history += message
+        final_question = question_extention(message)
 
-    query = message
-    docs = db.similarity_search(query, k=1)
+    print(final_question)
+
+    history_openai_format = []
+    docs = db.similarity_search(final_question, k=1)
     context = docs[0].page_content
-    metadata_ref = docs[0].metadata["source"]
+    #metadata_ref = docs[0].metadata["source"]
     system_prompt = system_prompt_base.format(context=context)
     init = {
         "role": "system",
-        "content": system_prompt,
+        "content": system_prompt
     }
     history_openai_format.append(init)
     history_openai_format.append({"role": "user", "content": message})
@@ -72,7 +103,7 @@ def call_llm(
         generated_text += new_text
         yield generated_text
     
-    yield f"{generated_text}\n\n参照元:  {metadata_ref}"
+    #print(metadata_ref)
 
 demo = gr.ChatInterface(
     fn=call_llm,
