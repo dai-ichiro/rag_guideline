@@ -35,7 +35,7 @@ def question_extention(
     )
     messages = [
     {"role": "system", "content": "あなたは親切なAIアシスタントです。"},
-    {"role": "user", "content": chat_history}
+    {"role": "user", "content": query}
     ]
     input_ids = tokenizer.apply_chat_template(
         messages,
