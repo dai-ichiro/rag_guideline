@@ -24,6 +24,10 @@ db = FAISS.load_local(
     embeddings=embeddings,
     allow_dangerous_deserialization=True
 )
+def question_extention(
+        chat_history: str
+):
+    return "todo"
 
 def call_llm(
     message: str,
