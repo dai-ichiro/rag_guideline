@@ -18,7 +18,6 @@ def post_request():
             "temperature": 0.7,
             "top_p": 0.9,
             "top_k": 40,
-            "max_tokens": 1024,
             "presence_penalty": 0.0,
             "frequency_penalty": 0.0,
             "repeat_penalty": 1.1,
