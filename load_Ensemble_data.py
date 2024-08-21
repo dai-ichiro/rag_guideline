@@ -12,6 +12,7 @@ embeddings = HuggingFaceEmbeddings(model_name=embed_model_id)
 docs = torch.load("docs.langchaindata", weights_only=False)
 faiss_retriever = FAISS.from_documents(docs, embeddings).as_retriever()
 
+## bm25_retriever
 t = Tokenizer()
 def preprocess_jp(text: str) -> list[str]:
     tokenized_words = [token.surface for token in t.tokenize(text)]
@@ -19,7 +20,6 @@ def preprocess_jp(text: str) -> list[str]:
 
 vectorizer = torch.load("vectorizer.langchaindata", weights_only=False)
 
-## bm25_retriever
 bm25_retriever = BM25Retriever(
     vectorizer = vectorizer,
     preprocess_func=preprocess_jp,
