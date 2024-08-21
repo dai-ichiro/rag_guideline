@@ -1,5 +1,4 @@
 import torch
-from pathlib import Path
 from janome.tokenizer import Tokenizer
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
